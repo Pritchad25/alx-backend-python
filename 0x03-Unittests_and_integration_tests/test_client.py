@@ -25,7 +25,8 @@ class TestGithubOrgClient(unittest.TestCase):
 
                                                             def test_public_repos_url(self):
                                                                         """Unit test for GithubOrgClient._public_repos_url."""
-                                                                                with patch.object(GithubOrgClient, '_public_repos_url', new_callable=PropertyMock) as mock_property:
+                                                                                with patch.object(GithubOrgClient, '_public_repos_url', 
+                                                                                                                  new_callable=PropertyMock) as mock_property:
                                                                                                 mock_property.return_value = 'mock_value'
                                                                                                             inst = GithubOrgClient('org_name')
 
@@ -33,25 +34,25 @@ class TestGithubOrgClient(unittest.TestCase):
 
                                                                                                                             @patch('client.get_json')
                                                                                                                                 def test_public_repos(self, mock_get_json):
-                                                                                                                                            """Unit test for GithubOrgClient.public_repos."""
-                                                                                                                                                    mock_get_json.return_value = [
-                                                                                                                                                                        {"name": "repo1"},
-                                                                                                                                                                                    {"name": "repo2"},
-                                                                                                                                                                                                {"name": "repo3"}
-                                                                                                                                                                                                        ]
+                                                                                                                                        """Unit test for GithubOrgClient.public_repos."""
+                                                                                                                                                mock_get_json.return_value = [
+                                                                                                                                                                {"name": "repo1"},
+                                                                                                                                                                        {"name": "repo2"},
+                                                                                                                                                                                {"name": "repo3"}
+                                                                                                                                                                                    ]
 
-                                                                                                                                                            with patch.object(GithubOrgClient, '_public_repos_url', new_callable=PropertyMock) as mock_public_url:
-                                                                                                                                                                            mock_public_url.return_value = 'mock_url'
-                                                                                                                                                                                        inst = GithubOrgClient('org_name')
+                                                                                                                                                        with patch.object(GithubOrgClient, '_public_repos_url', 
+                                                                                                                                                                                          new_callable=PropertyMock) as mock_public_url:
+                                                                                                                                                                    mock_public_url.return_value = 'mock_url'
+                                                                                                                                                                            inst = GithubOrgClient('org_name')
 
-                                                                                                                                                                                                    expected_repos = ["repo1", "repo2", "repo3"]
-                                                                                                                                                                                                                self.assertEqual(inst.public_repos(), expected_repos)
+                                                                                                                                                                                    expected_repos = ["repo1", "repo2", "repo3"]
+                                                                                                                                                                                            self.assertEqual(inst.public_repos(), expected_repos)
+                                                                                                                                                                                                    
+                                                                                                                                                                                                            # Ensure that both mocks were called correctly
+                                                                                                                                                                                                                    mock_public_url.assert_called_once()
+                                                                                                                                                                                                                            mock_get_json.assert_called_once_with('mock_url')
 
-                                                                                                                                                                                                                            # Ensure that both mocks were called correctly
-                                                                                                                                                                                                                                        mock_public_url.assert_called_once()
-                                                                                                                                                                                                                                                    mock_get_json.assert_called_once_with('mock_url')
 
-
-                                                                                                                                                                                                                                                    if __name__ == '__main__':
-                                                                                                                                                                                                                                                            unittest.main()
-
+                                                                                                                                                                                                                            if __name__ == '__main__':
+                                                                                                                                                                                                                                    unittest.main()
