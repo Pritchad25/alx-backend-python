@@ -1,19 +1,26 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 class CustomUser(AbstractUser):
-    """Custom User model extending Django's default User model."""
-    bio = models.TextField(blank=True, null=True)
+    """Custom user model extending Django's default User model."""
+    bio = models.TextField(blank=True, null=True)  # Example additional field
 
 class Conversation(models.Model):
-    """Model to track user conversations."""
+    """Tracks user conversations."""
     participants = models.ManyToManyField(CustomUser,
-                                      related_name="conversations")
+                      related_name="conversations")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Conversation between {', '.join([p.username
+                for p in self.participants.all()])}"
+
 class Message(models.Model):
-    """Model for messages sent in a conversation."""
+    """Stores messages exchanged in a conversation."""
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message from {self.sender.username} at {self.timestamp}"
