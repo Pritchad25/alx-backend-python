@@ -5,6 +5,11 @@ class CustomUser(AbstractUser):
     """Custom user model extending Django's default User model."""
     bio = models.TextField(blank=True, null=True)  # Example additional field
 
+    # Fixing reverse accessor clashes by adding unique `related_name`
+    groups = models.ManyToManyField("auth.Group", related_name="customuser_groups")
+    user_permissions = models.ManyToManyField(
+            "auth.Permission", related_name="customuser_permissions")
+
 class Conversation(models.Model):
     """Tracks user conversations."""
     participants = models.ManyToManyField(CustomUser,
@@ -12,8 +17,7 @@ class Conversation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Conversation between {', '.join([p.username
-                for p in self.participants.all()])}"
+        return f"Conversation between {', '.join([p.username for p in self.participants.all()])}"
 
 class Message(models.Model):
     """Stores messages exchanged in a conversation."""
