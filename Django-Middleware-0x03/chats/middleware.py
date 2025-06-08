@@ -11,9 +11,8 @@ class RestrictAccessByTimeMiddleware:
 
     def __call__(self, request):
         current_time = datetime.datetime.now().time()
-        start_restricted_time = datetime.time(9, 0) #9AM
-        end_restricted_time = datetime.time(18, 0) #6PM
-
+        start_restricted_time = datetime.time(21, 0) # 9PM
+        end_restricted_time = datetime.time(6, 0) #6AM
         if not (start_restricted_time <= current_time or current_time < end_restricted_time):
             return HttpResponseForbidden("Access to messaging app is restricted outside 9 AM - 6 PM.")
         return self.get_response(request)
