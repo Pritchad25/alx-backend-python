@@ -36,7 +36,7 @@ class OffensiveLanguageMiddleware:
         if x_forwarded_for:
             return x_forwarded_for.split(",")[0].strip()
         return request.META.get("REMOTE_ADDR")
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
     """Middleware to restrict access based on user role.
         Only admins and moderators can proceed.
     """
