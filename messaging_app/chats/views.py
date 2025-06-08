@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
+from .pagination import MessagePagination
+from .filters import MessageFilter
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
@@ -33,7 +36,10 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     """ViewSet for handling messages within conversations."""
     serializer_class = MessageSerializer
-    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+    permission_classes = [IsParticipantOfConversation]
+    pagination_class = MessagePagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MessageFilter
 
     def get_queryset(self):
         """
