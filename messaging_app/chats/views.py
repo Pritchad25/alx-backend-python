@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsParticipantOfConversation
 from .models import Conversation, Message, CustomUser
 from .serializers import ConversationSerializer, MessageSerializer
 from rest_framework.decorators import action
@@ -9,6 +12,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     """ViewSet for handling conversations."""
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
 
     @action(detail=False, methods=['post'])
     def create_conversation(self, request):
@@ -30,6 +34,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     """ViewSet for handling messages within conversations."""
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
 
     @action(detail=False, methods=['post'])
     def send_message(self, request):
