@@ -10,4 +10,9 @@ class IsParticipantOfConversation(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         ## Ensure the user is a participant in the conversation
-        return obj.sender == request.user or obj.receiver == request.user
+        if obj.sender == request.user or obj.receiver == request.user:
+            # Restrict methods explicitly
+            if request.method in ["PUT", "PATCH", "DELETE"]:
+                return obj.sender == request.user  # Only sender can modify/delete messages
+            return True  # Allow GET, POST requests for participan
+        return False #tsr
