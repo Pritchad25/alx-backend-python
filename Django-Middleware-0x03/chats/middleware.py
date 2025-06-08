@@ -1,6 +1,41 @@
 import datetime
 import logging
 from django.http import HttpResponseForbidden
+from collections import defaultdict
+
+class OffensiveLanguageMiddleware:
+    """
+    Middleware to restrict users from sending more than 5 messages per minute based on their IP address.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.message_tracker = defaultdict(list)  # Tracks timestamps per IP
+
+    def __call__(self, request):
+        if request.method == "POST" and request.path.startswith("/api/messages/"):
+            user_ip = self.get_client_ip(request)
+            current_time = time.time()
+
+            # Remove timestamps older than 60 seconds
+            self.message_tracker[user_ip] = [
+                    timestamp for timestamp in self.message_tracker[user_ip]
+                    if current_time - timestamp < 60
+            ]
+
+            # Check if user exceeded the limit
+            if len(self.message_tracker[user_ip]) >= 5:
+                return HttpResponseForbidden("You have exceeded the message limit (5 per minute). Please wait.")
+
+            # Log new message timestamp
+            self.message_tracker[user_ip].append(current_time)
+        return self.get_response(request)
+
+    def get_client_ip(self, request):
+        """ Extracts IP address from request headers """
+        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+        if x_forwarded_for:
+            return x_forwarded_for.split(",")[0].strip()
+        return request.META.get("REMOTE_ADDR")
 
 class RestrictAccessByTimeMiddleware:
     """
