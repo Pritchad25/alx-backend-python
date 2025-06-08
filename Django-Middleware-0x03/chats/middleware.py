@@ -36,6 +36,22 @@ class OffensiveLanguageMiddleware:
         if x_forwarded_for:
             return x_forwarded_for.split(",")[0].strip()
         return request.META.get("REMOTE_ADDR")
+class RolePermissionMiddleware:
+    """Middleware to restrict access based on user role.
+        Only admins and moderators can proceed.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.user.is_authenticated:
+            user_role = getattr(request.user, "role", None)  # Ensure user has a role attribute
+
+            if user_role not in ["admin", "moderator"]:
+                return HttpResponseForbidden("Access denied: Only admins or moderators can perform this action.")
+        return self.get_response(request)
+
 
 class RestrictAccessByTimeMiddleware:
     """
