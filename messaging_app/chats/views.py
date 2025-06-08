@@ -32,9 +32,24 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     """ViewSet for handling messages within conversations."""
-    queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+
+    def get_queryset(self):
+        """
+        Ensure users can only retrieve messages they are participants in.
+        """
+        user = self.request.user
+        return Message.objects.filter(sender=user) | Message.objects.filter(receiver=user)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Ensure only the sender can delete a message.
+        """
+        message = self.get_object()
+        if message.sender != request.user:
+            return Response({"detail": "You are not allowed to delete this message."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
     @action(detail=False, methods=['post'])
     def send_message(self, request):
