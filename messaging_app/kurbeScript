@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Exit immediately on error
+set -e
+
+# Start Minikube cluster
+echo "Starting Minikube cluster..."
+minikube start
+
+# Check cluster status
+echo "Verifying that the cluster is running..."
+kubectl cluster-info
+
+# List pods
+echo "Retrieving available pods..."
+kubectl get pods --all-namespaces
