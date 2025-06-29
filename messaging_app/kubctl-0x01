@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Exit on any error
+set -e
+
+echo "Scaling the messaging-app deployment to 3 replicas..."
+kubectl scale deployment messaging-app --replicas=3
+
+echo "Getting list of running pods:"
+kubectl get pods
+
+echo "Running load test using wrk (ensure wrk is installed)..."
+
+echo "Monitoring resource usage across pods:"
+kubectl top pods
