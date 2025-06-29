@@ -1,0 +1,12 @@
+metadata:
+        name: messaging-green
+spec:
+        selector:
+                matchLabels:
+                        app: messaging
+                        version: green
+        template:
+                metadata:
+                        labels:
+                                app: messaging
+                                version: green
