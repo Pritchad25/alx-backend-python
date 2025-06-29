@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+echo "Applying blue deployment with version 2.0..."
+kubectl apply -f blue_deployment.yaml
+
+echo "Waiting for rollout to complete..."
+kubectl rollout status deployment/messaging-blue
+
+echo "Testing for potential downtime using curl..."
+for i in {1..10}; do
+  curl --silent --max-time 1 http://messaging.local/api/ || echo "Request failed"
+  sleep 1
+done
+
+echo "Current pods after rollout:"
+kubectl get pods -l app=messaging
